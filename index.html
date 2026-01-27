@@ -1,0 +1,353 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  ShoppingBag, 
+  PlusCircle, 
+  LayoutDashboard, 
+  Package, 
+  Search, 
+  Trash2, 
+  Tag, 
+  DollarSign,
+  Info,
+  Menu,
+  X
+} from 'lucide-react';
+
+/**
+ * Don Dinero MarketPlace - Aplicación Principal
+ * Incluye gestión de inventario, generación de IDs y catálogo de ventas.
+ */
+export default function App() {
+  const [view, setView] = useState('shop'); // 'shop' o 'admin'
+  const [products, setProducts] = useState([
+    {
+      id: "DD-1001",
+      name: "Cuenta Premium Streaming",
+      price: 15.99,
+      category: "Cuentas",
+      description: "Acceso total por 30 días, resolución 4K.",
+      image: "https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=400&q=80"
+    },
+    {
+      id: "DD-1002",
+      name: "Suscripción Gaming Pro",
+      price: 25.50,
+      category: "Servicios",
+      description: "Servidor dedicado y skins exclusivas.",
+      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&q=80"
+    }
+  ]);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Función para agregar productos
+  const addProduct = (newProduct) => {
+    const id = `DD-${Math.floor(1000 + Math.random() * 9000)}`;
+    setProducts([...products, { ...newProduct, id }]);
+  };
+
+  // Función para eliminar productos
+  const deleteProduct = (id) => {
+    setProducts(products.filter(p => p.id !== id));
+  };
+
+  const filteredProducts = products.filter(p => 
+    p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    p.id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
+      {/* Navegación */}
+      <nav className="bg-green-600 text-white shadow-lg sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16 items-center">
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => setView('shop')}>
+              <div className="bg-white p-1.5 rounded-full">
+                <DollarSign className="text-green-600 h-6 w-6" />
+              </div>
+              <span className="font-bold text-xl tracking-tight">Don Dinero</span>
+            </div>
+
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center space-x-4">
+              <button 
+                onClick={() => setView('shop')}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition ${view === 'shop' ? 'bg-green-700' : 'hover:bg-green-500'}`}
+              >
+                Tienda
+              </button>
+              <button 
+                onClick={() => setView('admin')}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition ${view === 'admin' ? 'bg-green-700' : 'hover:bg-green-500'}`}
+              >
+                Administrar
+              </button>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
+              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2">
+                {isMenuOpen ? <X /> : <Menu />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Menu Content */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-green-700 px-2 pt-2 pb-3 space-y-1">
+            <button 
+              onClick={() => { setView('shop'); setIsMenuOpen(false); }}
+              className="block w-full text-left px-3 py-2 rounded-md text-base font-medium"
+            >
+              Tienda
+            </button>
+            <button 
+              onClick={() => { setView('admin'); setIsMenuOpen(false); }}
+              className="block w-full text-left px-3 py-2 rounded-md text-base font-medium"
+            >
+              Administrar
+            </button>
+          </div>
+        )}
+      </nav>
+
+      {/* Contenido Principal */}
+      <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        {view === 'shop' ? (
+          <ShopView products={filteredProducts} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        ) : (
+          <AdminView products={products} onAdd={addProduct} onDelete={deleteProduct} />
+        )}
+      </main>
+
+      <footer className="bg-white border-t mt-auto py-8">
+        <div className="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
+          &copy; {new Date().getFullYear()} Don Dinero MarketPlace. Todos los derechos reservados.
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+/**
+ * VISTA DE TIENDA: Para que los clientes vean los productos
+ */
+function ShopView({ products, searchTerm, setSearchTerm }) {
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <h1 className="text-3xl font-extrabold text-gray-900 flex items-center gap-2">
+          <ShoppingBag className="text-green-600" /> Explorar Mercado
+        </h1>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
+          <input 
+            type="text"
+            placeholder="Buscar por nombre o ID..."
+            className="pl-10 pr-4 py-2 border border-gray-300 rounded-full w-full md:w-80 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
+
+      {products.length === 0 ? (
+        <div className="text-center py-20 bg-white rounded-2xl border-2 border-dashed">
+          <Package className="mx-auto h-12 w-12 text-gray-300 mb-4" />
+          <p className="text-gray-500">No hay productos disponibles por ahora.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {products.map((product) => (
+            <div key={product.id} className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-shadow border border-gray-100 overflow-hidden flex flex-col">
+              <div className="h-48 overflow-hidden relative">
+                <img 
+                  src={product.image || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&q=80"} 
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+                <span className="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-md text-xs font-bold text-green-700 shadow-sm">
+                  {product.category}
+                </span>
+              </div>
+              <div className="p-5 flex-1 flex flex-col">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-bold text-lg text-gray-800 line-clamp-1">{product.name}</h3>
+                </div>
+                <p className="text-sm text-gray-500 mb-4 flex-1">{product.description}</p>
+                <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
+                  <div className="text-xs font-mono bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                    ID: {product.id}
+                  </div>
+                  <div className="text-xl font-bold text-green-600">
+                    ${product.price.toFixed(2)}
+                  </div>
+                </div>
+                <button className="mt-4 w-full bg-green-600 text-white py-2 rounded-xl font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2">
+                  Contactar Vendedor
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * VISTA DE ADMINISTRADOR: Para subir y borrar productos
+ */
+function AdminView({ products, onAdd, onDelete }) {
+  const [formData, setFormData] = useState({
+    name: "",
+    price: "",
+    category: "Cuentas",
+    description: "",
+    image: ""
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.price) return;
+    onAdd({
+      ...formData,
+      price: parseFloat(formData.price)
+    });
+    setFormData({ name: "", price: "", category: "Cuentas", description: "", image: "" });
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Formulario */}
+      <div className="lg:col-span-1">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
+          <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+            <PlusCircle className="text-green-600" /> Nuevo Artículo
+          </h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del Producto</label>
+              <input 
+                required
+                className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-green-500"
+                value={formData.name}
+                onChange={e => setFormData({...formData, name: e.target.value})}
+                placeholder="Ej: Suscripción Mensual"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Precio ($)</label>
+                <input 
+                  required
+                  type="number"
+                  step="0.01"
+                  className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-green-500"
+                  value={formData.price}
+                  onChange={e => setFormData({...formData, price: e.target.value})}
+                  placeholder="0.00"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+                <select 
+                  className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-green-500"
+                  value={formData.category}
+                  onChange={e => setFormData({...formData, category: e.target.value})}
+                >
+                  <option>Cuentas</option>
+                  <option>Servicios</option>
+                  <option>Físico</option>
+                  <option>Otro</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+              <textarea 
+                className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-green-500 h-24"
+                value={formData.description}
+                onChange={e => setFormData({...formData, description: e.target.value})}
+                placeholder="Detalles sobre lo que estás vendiendo..."
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">URL de Imagen (Opcional)</label>
+              <input 
+                className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-green-500"
+                value={formData.image}
+                onChange={e => setFormData({...formData, image: e.target.value})}
+                placeholder="https://..."
+              />
+            </div>
+            <button 
+              type="submit"
+              className="w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition mt-2"
+            >
+              Publicar Artículo
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {/* Tabla de Gestión */}
+      <div className="lg:col-span-2">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <LayoutDashboard className="text-blue-600" /> Inventario Actual
+            </h2>
+            <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">
+              {products.length} Artículos
+            </span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-bold">
+                <tr>
+                  <th className="px-6 py-4">ID / Producto</th>
+                  <th className="px-6 py-4">Categoría</th>
+                  <th className="px-6 py-4">Precio</th>
+                  <th className="px-6 py-4 text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {products.map(p => (
+                  <tr key={p.id} className="hover:bg-gray-50 transition">
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col">
+                        <span className="font-mono text-[10px] text-gray-400 font-bold">{p.id}</span>
+                        <span className="font-semibold text-gray-800">{p.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-block px-2 py-1 rounded-md bg-gray-100 text-gray-600 text-xs">
+                        {p.category}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 font-bold text-gray-700">
+                      ${p.price.toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <button 
+                        onClick={() => onDelete(p.id)}
+                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
+                        title="Eliminar producto"
+                      >
+                        <Trash2 h-5 w-5 />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
