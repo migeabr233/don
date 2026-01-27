@@ -1,353 +1,386 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  ShoppingBag, 
-  PlusCircle, 
-  LayoutDashboard, 
-  Package, 
-  Search, 
-  Trash2, 
-  Tag, 
-  DollarSign,
-  Info,
-  Menu,
-  X
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Don Dinero - Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Playfair+Display:italic@700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .font-serif-italic {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+        }
+        .custom-shadow {
+            box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.05);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="text-slate-900">
 
-/**
- * Don Dinero MarketPlace - Aplicación Principal
- * Incluye gestión de inventario, generación de IDs y catálogo de ventas.
- */
-export default function App() {
-  const [view, setView] = useState('shop'); // 'shop' o 'admin'
-  const [products, setProducts] = useState([
-    {
-      id: "DD-1001",
-      name: "Cuenta Premium Streaming",
-      price: 15.99,
-      category: "Cuentas",
-      description: "Acceso total por 30 días, resolución 4K.",
-      image: "https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=400&q=80"
-    },
-    {
-      id: "DD-1002",
-      name: "Suscripción Gaming Pro",
-      price: 25.50,
-      category: "Servicios",
-      description: "Servidor dedicado y skins exclusivas.",
-      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&q=80"
-    }
-  ]);
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  // Función para agregar productos
-  const addProduct = (newProduct) => {
-    const id = `DD-${Math.floor(1000 + Math.random() * 9000)}`;
-    setProducts([...products, { ...newProduct, id }]);
-  };
-
-  // Función para eliminar productos
-  const deleteProduct = (id) => {
-    setProducts(products.filter(p => p.id !== id));
-  };
-
-  const filteredProducts = products.filter(p => 
-    p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    p.id.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  return (
-    <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
-      {/* Navegación */}
-      <nav className="bg-green-600 text-white shadow-lg sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => setView('shop')}>
-              <div className="bg-white p-1.5 rounded-full">
-                <DollarSign className="text-green-600 h-6 w-6" />
-              </div>
-              <span className="font-bold text-xl tracking-tight">Don Dinero</span>
-            </div>
-
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center space-x-4">
-              <button 
-                onClick={() => setView('shop')}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition ${view === 'shop' ? 'bg-green-700' : 'hover:bg-green-500'}`}
-              >
-                Tienda
-              </button>
-              <button 
-                onClick={() => setView('admin')}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition ${view === 'admin' ? 'bg-green-700' : 'hover:bg-green-500'}`}
-              >
-                Administrar
-              </button>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <div className="md:hidden">
-              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2">
-                {isMenuOpen ? <X /> : <Menu />}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Menu Content */}
-        {isMenuOpen && (
-          <div className="md:hidden bg-green-700 px-2 pt-2 pb-3 space-y-1">
-            <button 
-              onClick={() => { setView('shop'); setIsMenuOpen(false); }}
-              className="block w-full text-left px-3 py-2 rounded-md text-base font-medium"
-            >
-              Tienda
-            </button>
-            <button 
-              onClick={() => { setView('admin'); setIsMenuOpen(false); }}
-              className="block w-full text-left px-3 py-2 rounded-md text-base font-medium"
-            >
-              Administrar
-            </button>
-          </div>
-        )}
-      </nav>
-
-      {/* Contenido Principal */}
-      <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        {view === 'shop' ? (
-          <ShopView products={filteredProducts} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-        ) : (
-          <AdminView products={products} onAdd={addProduct} onDelete={deleteProduct} />
-        )}
-      </main>
-
-      <footer className="bg-white border-t mt-auto py-8">
-        <div className="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} Don Dinero MarketPlace. Todos los derechos reservados.
-        </div>
-      </footer>
-    </div>
-  );
-}
-
-/**
- * VISTA DE TIENDA: Para que los clientes vean los productos
- */
-function ShopView({ products, searchTerm, setSearchTerm }) {
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h1 className="text-3xl font-extrabold text-gray-900 flex items-center gap-2">
-          <ShoppingBag className="text-green-600" /> Explorar Mercado
-        </h1>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
-          <input 
-            type="text"
-            placeholder="Buscar por nombre o ID..."
-            className="pl-10 pr-4 py-2 border border-gray-300 rounded-full w-full md:w-80 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
-
-      {products.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-2xl border-2 border-dashed">
-          <Package className="mx-auto h-12 w-12 text-gray-300 mb-4" />
-          <p className="text-gray-500">No hay productos disponibles por ahora.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <div key={product.id} className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-shadow border border-gray-100 overflow-hidden flex flex-col">
-              <div className="h-48 overflow-hidden relative">
-                <img 
-                  src={product.image || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&q=80"} 
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                />
-                <span className="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-md text-xs font-bold text-green-700 shadow-sm">
-                  {product.category}
-                </span>
-              </div>
-              <div className="p-5 flex-1 flex flex-col">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-bold text-lg text-gray-800 line-clamp-1">{product.name}</h3>
+    <!-- HEADER / NAVIGATION -->
+    <nav class="bg-emerald-600 text-white shadow-xl sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center gap-4">
+                <div class="flex items-center gap-3 cursor-pointer shrink-0" onclick="showView('shop')">
+                    <div class="bg-white p-2 rounded-2xl shadow-inner rotate-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="text-emerald-600 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="hidden sm:block">
+                        <div class="font-black text-xl tracking-tighter uppercase italic leading-none">Don Dinero</div>
+                        <div class="text-[9px] uppercase tracking-[0.2em] font-bold opacity-70">Premium</div>
+                    </div>
                 </div>
-                <p className="text-sm text-gray-500 mb-4 flex-1">{product.description}</p>
-                <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
-                  <div className="text-xs font-mono bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                    ID: {product.id}
-                  </div>
-                  <div className="text-xl font-bold text-green-600">
-                    ${product.price.toFixed(2)}
-                  </div>
+
+                <!-- Buscador Desktop -->
+                <div class="flex-1 max-w-md relative group hidden md:block">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-200 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input 
+                        type="text" 
+                        id="searchInput"
+                        oninput="handleSearch()"
+                        placeholder="Buscar servicios..." 
+                        class="w-full bg-emerald-700/50 border-none rounded-xl py-2.5 pl-11 pr-4 text-sm placeholder:text-emerald-200 focus:ring-2 focus:ring-white/20 outline-none transition-all text-white"
+                    />
                 </div>
-                <button className="mt-4 w-full bg-green-600 text-white py-2 rounded-xl font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2">
-                  Contactar Vendedor
-                </button>
-              </div>
+
+                <div class="flex items-center gap-2">
+                    <button id="btnShop" onclick="showView('shop')" class="px-4 py-2 rounded-xl text-xs font-black transition-all bg-white text-emerald-600 shadow-lg">TIENDA</button>
+                    <button id="btnAdmin" onclick="handleAdminClick()" class="px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 hover:bg-emerald-500">
+                        <span id="lockIcon">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </span>
+                        ADMIN
+                    </button>
+                </div>
             </div>
-          ))}
         </div>
-      )}
+    </nav>
+
+    <!-- Buscador móvil -->
+    <div class="md:hidden bg-emerald-600 px-4 pb-4">
+        <div class="relative">
+            <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-200 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input 
+                type="text" 
+                id="searchMobile"
+                oninput="handleSearchMobile()"
+                placeholder="Buscar..." 
+                class="w-full bg-emerald-700/50 border-none rounded-xl py-2.5 pl-11 pr-4 text-sm text-white placeholder:text-emerald-200 outline-none"
+            />
+        </div>
     </div>
-  );
-}
 
-/**
- * VISTA DE ADMINISTRADOR: Para subir y borrar productos
- */
-function AdminView({ products, onAdd, onDelete }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    price: "",
-    category: "Cuentas",
-    description: "",
-    image: ""
-  });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.name || !formData.price) return;
-    onAdd({
-      ...formData,
-      price: parseFloat(formData.price)
-    });
-    setFormData({ name: "", price: "", category: "Cuentas", description: "", image: "" });
-  };
-
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      {/* Formulario */}
-      <div className="lg:col-span-1">
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
-          <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-            <PlusCircle className="text-green-600" /> Nuevo Artículo
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del Producto</label>
-              <input 
-                required
-                className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-green-500"
-                value={formData.name}
-                onChange={e => setFormData({...formData, name: e.target.value})}
-                placeholder="Ej: Suscripción Mensual"
-              />
+    <main class="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
+        <!-- VISTA TIENDA -->
+        <div id="shopView" class="animate__animated animate__fadeIn">
+            <div class="text-center md:text-left mb-8">
+                <h1 class="text-4xl font-black text-slate-900 tracking-tighter italic uppercase leading-none">Marketplace</h1>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Precio ($)</label>
+            
+            <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <!-- Se inyecta con JS -->
+            </div>
+
+            <div id="noResults" class="hidden text-center py-32 bg-white rounded-[3rem] border border-slate-100 flex flex-col items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-200 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                <h2 class="text-xl font-black text-slate-400 uppercase italic">Sin resultados</h2>
+            </div>
+        </div>
+
+        <!-- VISTA ADMIN -->
+        <div id="adminView" class="hidden animate__animated animate__fadeIn">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Formulario -->
+                <div class="lg:col-span-4">
+                    <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 sticky top-32">
+                        <h2 class="text-xl font-black italic uppercase tracking-tighter mb-8 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="text-emerald-600 h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                            Nuevo Ítem
+                        </h2>
+                        <form id="productForm" class="space-y-4">
+                            <input type="text" id="pName" required placeholder="Nombre" class="w-full p-4 bg-slate-50 rounded-xl border-none font-bold text-sm outline-none focus:ring-2 focus:ring-emerald-500/20">
+                            <div class="grid grid-cols-2 gap-3">
+                                <input type="number" step="0.01" id="pPrice" required placeholder="Precio" class="w-full p-4 bg-slate-50 rounded-xl border-none font-bold text-sm outline-none focus:ring-2 focus:ring-emerald-500/20">
+                                <select id="pCategory" class="w-full p-4 bg-slate-50 rounded-xl border-none font-bold text-xs outline-none">
+                                    <option>Cuentas</option>
+                                    <option>Servicios</option>
+                                    <option>Gamer</option>
+                                </select>
+                            </div>
+                            <textarea id="pDesc" class="w-full p-4 bg-slate-50 rounded-xl h-24 resize-none border-none text-xs italic font-serif-italic outline-none focus:ring-2 focus:ring-emerald-500/20" placeholder="Descripción..."></textarea>
+                            <input type="text" id="pImage" placeholder="URL imagen" class="w-full p-4 bg-slate-50 rounded-xl border-none text-xs outline-none focus:ring-2 focus:ring-emerald-500/20">
+                            <button type="submit" class="w-full bg-slate-900 text-white py-4 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-black transition-all shadow-lg">Publicar</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Tabla Inventario -->
+                <div class="lg:col-span-8">
+                    <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+                        <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-white/80 backdrop-blur sticky top-0 z-10">
+                            <h2 class="text-xl font-black italic uppercase tracking-tighter flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="text-indigo-600 h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                                Gestión
+                            </h2>
+                            <span id="totalBadge" class="bg-slate-100 text-slate-500 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest">Total: 0</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50/50 text-slate-400 text-[9px] uppercase font-black tracking-widest">
+                                    <tr>
+                                        <th class="px-8 py-4">Ítem</th>
+                                        <th class="px-8 py-4 text-right">Precio</th>
+                                        <th class="px-8 py-4 text-center"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminTableBody" class="divide-y divide-slate-50">
+                                    <!-- Inyectado por JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL LOGIN -->
+    <div id="loginModal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-sm shadow-2xl border-b-8 border-emerald-600 animate__animated animate__zoomIn animate__faster">
+            <div class="bg-emerald-50 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 mx-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" class="text-emerald-600 h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <h3 class="font-black text-xl mb-1 text-center uppercase italic">Administración</h3>
+            <p class="text-slate-400 text-center text-xs mb-6 italic font-serif-italic">Clave: admin123</p>
+            <form id="loginForm" class="space-y-4">
                 <input 
-                  required
-                  type="number"
-                  step="0.01"
-                  className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-green-500"
-                  value={formData.price}
-                  onChange={e => setFormData({...formData, price: e.target.value})}
-                  placeholder="0.00"
+                    type="password" 
+                    id="passwordInput"
+                    placeholder="••••••••" 
+                    class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none transition-all text-center text-lg font-bold focus:ring-4 focus:ring-emerald-500/20 focus:bg-white"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
-                <select 
-                  className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-green-500"
-                  value={formData.category}
-                  onChange={e => setFormData({...formData, category: e.target.value})}
-                >
-                  <option>Cuentas</option>
-                  <option>Servicios</option>
-                  <option>Físico</option>
-                  <option>Otro</option>
-                </select>
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-              <textarea 
-                className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-green-500 h-24"
-                value={formData.description}
-                onChange={e => setFormData({...formData, description: e.target.value})}
-                placeholder="Detalles sobre lo que estás vendiendo..."
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">URL de Imagen (Opcional)</label>
-              <input 
-                className="w-full p-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-green-500"
-                value={formData.image}
-                onChange={e => setFormData({...formData, image: e.target.value})}
-                placeholder="https://..."
-              />
-            </div>
-            <button 
-              type="submit"
-              className="w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition mt-2"
-            >
-              Publicar Artículo
-            </button>
-          </form>
+                <button type="submit" class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-emerald-700 transition shadow-lg">Entrar</button>
+                <button type="button" onclick="closeLogin()" class="w-full text-slate-300 text-[9px] font-black uppercase tracking-widest mt-2">Cerrar</button>
+            </form>
         </div>
-      </div>
-
-      {/* Tabla de Gestión */}
-      <div className="lg:col-span-2">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-            <h2 className="text-xl font-bold flex items-center gap-2">
-              <LayoutDashboard className="text-blue-600" /> Inventario Actual
-            </h2>
-            <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">
-              {products.length} Artículos
-            </span>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-bold">
-                <tr>
-                  <th className="px-6 py-4">ID / Producto</th>
-                  <th className="px-6 py-4">Categoría</th>
-                  <th className="px-6 py-4">Precio</th>
-                  <th className="px-6 py-4 text-center">Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {products.map(p => (
-                  <tr key={p.id} className="hover:bg-gray-50 transition">
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col">
-                        <span className="font-mono text-[10px] text-gray-400 font-bold">{p.id}</span>
-                        <span className="font-semibold text-gray-800">{p.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-block px-2 py-1 rounded-md bg-gray-100 text-gray-600 text-xs">
-                        {p.category}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 font-bold text-gray-700">
-                      ${p.price.toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <button 
-                        onClick={() => onDelete(p.id)}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
-                        title="Eliminar producto"
-                      >
-                        <Trash2 h-5 w-5 />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
     </div>
-  );
-}
+
+    <script>
+        // ESTADO DE LA APP
+        let currentView = 'shop';
+        let isAdminAuthenticated = false;
+        let searchTerm = "";
+        
+        // Datos iniciales
+        let products = [
+            {
+                id: 1,
+                customId: "DD-7721",
+                name: "Netflix Premium 4K",
+                price: 12.50,
+                category: "Cuentas",
+                description: "Acceso total por 30 días, ultra HD y 4 pantallas simultáneas.",
+                image: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=400&q=80"
+            },
+            {
+                id: 2,
+                customId: "DD-1092",
+                name: "Spotify Family",
+                price: 8.00,
+                category: "Cuentas",
+                description: "Plan familiar de 1 mes sin anuncios y música offline.",
+                image: "https://images.unsplash.com/photo-1614680376593-902f74cf0d41?w=400&q=80"
+            }
+        ];
+
+        // FUNCIONES DE VISTA
+        function showView(view) {
+            currentView = view;
+            const shop = document.getElementById('shopView');
+            const admin = document.getElementById('adminView');
+            const bShop = document.getElementById('btnShop');
+            const bAdmin = document.getElementById('btnAdmin');
+
+            if(view === 'shop') {
+                shop.classList.remove('hidden');
+                admin.classList.add('hidden');
+                bShop.className = "px-4 py-2 rounded-xl text-xs font-black transition-all bg-white text-emerald-600 shadow-lg";
+                bAdmin.className = "px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 hover:bg-emerald-500";
+            } else {
+                shop.classList.add('hidden');
+                admin.classList.remove('hidden');
+                bShop.className = "px-4 py-2 rounded-xl text-xs font-black transition-all hover:bg-emerald-500";
+                bAdmin.className = "px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 bg-white text-emerald-600 shadow-lg";
+            }
+            render();
+        }
+
+        // LOGIN
+        function handleAdminClick() {
+            if (isAdminAuthenticated) {
+                showView('admin');
+            } else {
+                document.getElementById('loginModal').classList.remove('hidden');
+                document.getElementById('passwordInput').focus();
+            }
+        }
+
+        function closeLogin() {
+            document.getElementById('loginModal').classList.add('hidden');
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const pass = document.getElementById('passwordInput').value;
+            if(pass === "admin123") {
+                isAdminAuthenticated = true;
+                closeLogin();
+                showView('admin');
+                document.getElementById('lockIcon').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><line x1="12" y1="12" x2="12" y2="12"></line></svg>`;
+            } else {
+                const input = document.getElementById('passwordInput');
+                input.classList.add('border-red-500', 'animate-pulse');
+                setTimeout(() => input.classList.remove('border-red-500', 'animate-pulse'), 1000);
+            }
+        });
+
+        // BUSQUEDA
+        function handleSearch() {
+            searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            document.getElementById('searchMobile').value = searchTerm;
+            render();
+        }
+
+        function handleSearchMobile() {
+            searchTerm = document.getElementById('searchMobile').value.toLowerCase();
+            document.getElementById('searchInput').value = searchTerm;
+            render();
+        }
+
+        // ACCIONES PRODUCTOS
+        document.getElementById('productForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newP = {
+                id: Date.now(),
+                customId: "DD-" + Math.floor(1000 + Math.random() * 9000),
+                name: document.getElementById('pName').value,
+                price: parseFloat(document.getElementById('pPrice').value),
+                category: document.getElementById('pCategory').value,
+                description: document.getElementById('pDesc').value,
+                image: document.getElementById('pImage').value
+            };
+            products.unshift(newP);
+            document.getElementById('productForm').reset();
+            render();
+        });
+
+        function deleteProduct(id) {
+            products = products.filter(p => p.id !== id);
+            render();
+        }
+
+        function contactWhatsApp(name, id) {
+            const text = encodeURIComponent(`Hola, consulto por: ${name} (${id})`);
+            window.open(`https://wa.me/5491100000000?text=${text}`, '_blank');
+        }
+
+        // RENDERIZADO CENTRAL
+        function render() {
+            const grid = document.getElementById('productsGrid');
+            const table = document.getElementById('adminTableBody');
+            const noResults = document.getElementById('noResults');
+            const totalBadge = document.getElementById('totalBadge');
+
+            const filtered = products.filter(p => 
+                p.name.toLowerCase().includes(searchTerm) || 
+                p.customId.toLowerCase().includes(searchTerm)
+            );
+
+            // Tienda
+            grid.innerHTML = "";
+            if(filtered.length === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+                filtered.forEach(p => {
+                    grid.innerHTML += `
+                        <div class="bg-white rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all border border-slate-100 overflow-hidden flex flex-col group hover:-translate-y-1">
+                            <div class="h-48 overflow-hidden relative bg-slate-200">
+                                <img src="${p.image || 'https://images.unsplash.com/photo-1557683316-973673baf926?w=600&q=80'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-xl text-[9px] font-black uppercase text-emerald-600 shadow-sm italic">
+                                    ${p.category}
+                                </div>
+                            </div>
+                            <div class="p-6 flex-1 flex flex-col">
+                                <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest mb-1">ID: ${p.customId}</span>
+                                <h3 class="font-black text-xl text-slate-800 line-clamp-1 mb-1 tracking-tight uppercase italic">${p.name}</h3>
+                                <p class="text-xs text-slate-400 mb-6 flex-1 line-clamp-2 italic font-serif-italic leading-relaxed">${p.description}</p>
+                                <div class="flex items-center justify-between mt-auto">
+                                    <div class="text-2xl font-black text-slate-900 tracking-tighter">$${p.price.toFixed(2)}</div>
+                                    <button onclick="contactWhatsApp('${p.name}', '${p.customId}')" class="p-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition shadow-md active:scale-95">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            // Admin
+            table.innerHTML = "";
+            totalBadge.innerText = "Total: " + products.length;
+            products.forEach(p => {
+                table.innerHTML += `
+                    <tr class="hover:bg-slate-50/50 transition-colors">
+                        <td class="px-8 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0">
+                                    <img src="${p.image || 'https://images.unsplash.com/photo-1557683316-973673baf926?w=100&q=80'}" class="w-full h-full object-cover">
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-[8px] text-emerald-600 font-black uppercase">${p.customId}</span>
+                                    <span class="font-bold text-slate-800 text-sm uppercase italic tracking-tight">${p.name}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-4 text-right font-black text-lg text-slate-900 tracking-tighter">
+                            $${p.price.toFixed(2)}
+                        </td>
+                        <td class="px-8 py-4 text-center">
+                            <button onclick="deleteProduct(${p.id})" class="p-2 text-slate-200 hover:text-red-600 transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Inicializar
+        window.onload = render;
+    </script>
+</body>
+</html>
