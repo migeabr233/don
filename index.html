@@ -1,17 +1,21 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <!--version 0.1--> <!--productos act 1-->
     <!--telegram link-->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Don Dinero - Marketplace Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <script>
-        // Configuración de Tailwind para soportar modo oscuro por clase
         tailwind.config = {
             darkMode: 'class',
+            theme: {
+                extend: {
+                    screens: { 'xs': '400px' }
+                }
+            }
         }
     </script>
     <style>
@@ -20,6 +24,7 @@
         body {
             font-family: 'Inter', sans-serif;
             transition: background-color 0.3s ease, color 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
         }
         
         .dark body {
@@ -36,234 +41,310 @@
             aspect-ratio: 16 / 9;
         }
 
-        /* Estilo de scrollbar para modo oscuro */
-        .dark ::-webkit-scrollbar {
-            width: 8px;
+        /* Mantenimiento Overlay */
+        #maintenanceOverlay {
+            backdrop-filter: blur(25px);
+            background: radial-gradient(circle at center, #064e3b 0%, #020617 100%);
         }
-        .dark ::-webkit-scrollbar-track {
-            background: #1e293b;
+
+        .no-scroll {
+            overflow: hidden;
+            height: 100vh;
         }
-        .dark ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 10px;
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            width: 100%;
         }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        .dark ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 leading-tight transition-colors duration-300">
 
-    <!-- NAVEGACIÓN -->
-    <nav class="bg-emerald-600 dark:bg-emerald-800 text-white shadow-xl sticky top-0 z-50 transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 sm:h-20 items-center gap-4">
-                
-                <!-- Logo -->
-                <div class="flex items-center gap-2 sm:gap-3 cursor-pointer shrink-0" onclick="location.reload()">
-                    <div class="bg-white dark:bg-slate-900 p-1.5 sm:p-2 rounded-xl sm:rounded-2xl shadow-inner rotate-3 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="text-emerald-600 h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                    <div class="flex flex-col">
-                        <div class="font-black text-sm sm:text-xl tracking-tighter uppercase italic leading-none">Don Dinero</div>
-                        <div class="text-[7px] sm:text-[9px] uppercase tracking-[0.2em] font-bold opacity-70">Marketplace</div>
-                    </div>
-                </div>
-
-                <!-- Buscador Desktop -->
-                <div class="hidden md:block flex-1 max-w-md relative">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-200 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+    <!-- PANTALLA DE MANTENIMIENTO -->
+    <div id="maintenanceOverlay" class="fixed inset-0 z-[100] flex flex-col items-center justify-center p-4 sm:p-8 text-center hidden">
+        <div class="max-w-4xl w-full space-y-6 sm:space-y-8 animate__animated animate__fadeIn">
+            <div class="flex justify-center">
+                <div class="bg-emerald-600 p-4 sm:p-5 rounded-3xl shadow-[0_0_50px_rgba(16,185,129,0.4)] animate-pulse">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 sm:h-12 sm:w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
-                    <input 
-                        type="text" 
-                        id="searchInput"
-                        oninput="handleSearch(this.value)"
-                        placeholder="BUSCAR" 
-                        class="w-full bg-emerald-700/50 dark:bg-emerald-900/50 border-none rounded-xl py-2.5 pl-11 pr-4 text-sm placeholder:text-emerald-200 focus:ring-2 focus:ring-white/20 outline-none transition-all text-white"
-                    />
-                </div>
-
-                <!-- Botones Acción -->
-                <div class="flex items-center gap-2">
-                    <!-- Toggle Modo Oscuro -->
-                    <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-emerald-700/50 hover:bg-emerald-500 transition-all text-white" title="Cambiar modo">
-                        <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 5a7 7 0 100 14 7 7 0 000-14z" />
-                        </svg>
-                        <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                    </button>
-                    <div class="h-8 w-[1px] bg-white/20 mx-1"></div>
-                    <span class="hidden sm:block text-[10px] font-black uppercase tracking-widest opacity-80">Catálogo Público</span>
                 </div>
             </div>
-        </div>
-    </nav>
+            
+            <div class="space-y-2 sm:space-y-4 px-2">
+                <h1 class="text-4xl xs:text-5xl md:text-8xl font-black text-white tracking-tighter uppercase italic leading-[0.85]">
+                    Mantenimiento <br> en curso
+                </h1>
+                <p class="text-emerald-100/70 text-base sm:text-2xl font-serif-italic max-w-xl mx-auto italic">
+                    Estamos actualizando nuestro inventario. Volvemos pronto.
+                </p>
+            </div>
 
-    <!-- Buscador móvil -->
-    <div class="md:hidden bg-emerald-600 dark:bg-emerald-800 px-4 pb-4 shadow-lg transition-colors">
-        <div class="relative">
-            <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-200 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input 
-                type="text" 
-                id="searchMobile"
-                oninput="handleSearch(this.value)"
-                placeholder="¿Qué servicio buscas?" 
-                class="w-full bg-emerald-700/50 dark:bg-emerald-900/50 border-none rounded-xl py-2.5 pl-11 pr-4 text-sm text-white placeholder:text-emerald-200 outline-none focus:ring-1 focus:ring-white/30"
-            />
+            <div class="w-full max-w-2xl mx-auto px-2">
+                <div class="video-container rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-2 sm:border-4 border-emerald-900/50 bg-black">
+                    <video id="maintVideo" loop playsinline autoplay></video>
+                </div>
+            </div>
+
+            <div class="pt-4">
+                <span class="text-emerald-500 font-black text-xl sm:text-3xl tracking-[0.2em] uppercase italic opacity-50">Don Dinero</span>
+            </div>
         </div>
     </div>
 
-    <main class="max-w-7xl mx-auto px-4 py-8 sm:py-12 sm:px-6 lg:px-8">
-        <!-- CABECERA -->
-        <div class="mb-8 sm:mb-12">
-            <h1 class="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tighter italic uppercase leading-none transition-colors">
-                Inventario
-            </h1>
-            <p class="text-slate-500 dark:text-slate-400 text-sm sm:text-base mt-3 font-serif-italic transition-colors">
-                Metodos y servicios
-            </p>
-        </div>
-        
-        <!-- GRID DE PRODUCTOS -->
-        <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
-            <!-- Inyectado por JS -->
-        </div>
+    <div id="app" class="flex flex-col min-h-screen">
+        <!-- NAVEGACIÓN -->
+        <nav class="bg-emerald-600 dark:bg-emerald-800 text-white shadow-xl sticky top-0 z-50 transition-colors duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16 sm:h-20 items-center gap-4">
+                    
+                    <!-- Logo -->
+                    <div class="flex items-center gap-2 sm:gap-3 cursor-pointer shrink-0" onclick="location.reload()">
+                        <div class="bg-white dark:bg-slate-900 p-1.5 sm:p-2 rounded-xl sm:rounded-2xl shadow-inner rotate-3 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="text-emerald-600 h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="flex flex-col">
+                            <div class="font-black text-sm sm:text-xl tracking-tighter uppercase italic leading-none">Don Dinero</div>
+                            <div class="text-[7px] sm:text-[9px] uppercase tracking-[0.2em] font-bold opacity-70">Marketplace</div>
+                        </div>
+                    </div>
 
-        <!-- ESTADO VACÍO -->
-        <div id="noResults" class="hidden text-center py-24 sm:py-32 bg-white dark:bg-slate-800/50 rounded-[2.5rem] border border-slate-100 dark:border-slate-700/50 flex flex-col items-center px-6 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-slate-200 dark:text-slate-700 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <h2 class="text-xl font-black text-slate-300 dark:text-slate-600 uppercase italic">Sin coincidencias</h2>
-            <p class="text-slate-400 dark:text-slate-500 text-sm mt-1">Intenta con otros términos de búsqueda</p>
-        </div>
-    </main>
+                    <!-- Buscador Desktop -->
+                    <div class="hidden md:block flex-1 max-w-md relative">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-200 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input 
+                            type="text" 
+                            id="searchInput"
+                            oninput="handleSearch(this.value)"
+                            placeholder="BUSCAR" 
+                            class="w-full bg-emerald-700/50 dark:bg-emerald-900/50 border-none rounded-xl py-2.5 pl-11 pr-4 text-sm placeholder:text-emerald-200 focus:ring-2 focus:ring-white/20 outline-none transition-all text-white"
+                        />
+                    </div>
 
-    <!-- FOOTER -->
-    <footer class="max-w-7xl mx-auto px-4 py-12 border-t border-slate-200 dark:border-slate-800 mt-12 mb-8">
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-6">
-            <div class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-600 italic">
-                Don Dinero © 2024 • Calidad Garantizada
+                    <!-- Botones Acción -->
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-emerald-700/50 hover:bg-emerald-500 transition-all text-white">
+                            <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 5a7 7 0 100 14 7 7 0 000-14z" /></svg>
+                            <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                        </button>
+                        <div class="h-8 w-[1px] bg-white/20 mx-1"></div>
+                        <span class="hidden sm:block text-[10px] font-black uppercase tracking-widest opacity-80">Catálogo Público</span>
+                    </div>
+                </div>
             </div>
-            <div class="flex gap-4">
-                <button onclick="contactTelegram()" class="text-slate-400 hover:text-emerald-500 transition-colors">
-                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18.717-.962 4.084-1.362 5.441-.168.575-.532.747-.733.765-.453.041-.796-.301-1.235-.588-.687-.45-1.074-.731-1.741-1.168-.771-.506-.271-.784.168-1.238.115-.119 2.112-1.937 2.151-2.102.005-.021.009-.099-.039-.141-.047-.043-.117-.028-.168-.016-.072.016-1.22.774-3.438 2.272-.325.223-.62.332-.884.326-.291-.006-.851-.165-1.267-.301-.511-.166-.916-.254-.881-.536.018-.147.221-.297.608-.451 2.388-1.04 3.979-1.725 4.774-2.056 2.27-.942 2.741-1.107 3.048-1.112.068-.001.221.016.321.097.083.067.11.157.118.225.008.067.01.215.006.26z"/></svg>
-                </button>
+        </nav>
+
+        <main class="max-w-7xl mx-auto px-4 py-8 sm:py-12 sm:px-6 lg:px-8">
+            <div class="mb-8 sm:mb-12">
+                <h1 class="text-4xl sm:text-7xl font-black text-slate-900 dark:text-white tracking-tighter italic uppercase leading-none transition-colors">
+                    Inventario
+                </h1>
+                <p class="text-slate-500 dark:text-slate-400 text-sm sm:text-base mt-3 font-serif-italic transition-colors">
+                    Métodos y servicios actualizados
+                </p>
             </div>
-        </div>
-    </footer>
+            
+            <div id="productsGrid" class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8"></div>
+
+            <div id="noResults" class="hidden text-center py-24 sm:py-32 bg-white dark:bg-slate-800/50 rounded-[2.5rem] border border-slate-100 dark:border-slate-700/50 flex flex-col items-center px-6 transition-colors">
+                <h2 class="text-xl font-black text-slate-300 dark:text-slate-600 uppercase italic tracking-widest">Sin coincidencias</h2>
+            </div>
+            <audio id="bgMusic" src="musica.mp3" loop></audio>
+        </main>
+
+        <footer class="max-w-7xl mx-auto px-4 py-12 border-t border-slate-200 dark:border-slate-800 mt-auto mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-6">
+                <div class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-600 italic">
+                    Don Dinero © 2024 • Calidad Garantizada
+                </div>
+                
+                <!-- El interruptor de mantenimiento ahora está oculto visualmente pero sigue en el DOM -->
+                <div class="flex items-center gap-6">
+                    <div class="hidden flex items-center gap-2 opacity-30 hover:opacity-100 transition-opacity">
+                        <span class="text-[8px] font-bold uppercase text-slate-400">Maint Mode</span>
+                        <input type="checkbox" id="maintCheckbox" onchange="toggleMaintenance(this.checked)" class="w-3 h-3 cursor-pointer">
+                    </div>
+                    <button onclick="contactTelegram()" class="text-slate-400 hover:text-emerald-500 transition-colors">
+                        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18.717-.962 4.084-1.362 5.441-.168.575-.532.747-.733.765-.453.041-.796-.301-1.235-.588-.687-.45-1.074-.731-1.741-1.168-.771-.506-.271-.784.168-1.238.115-.119 2.112-1.937 2.151-2.102.005-.021.009-.099-.039-.141-.047-.043-.117-.028-.168-.016-.072.016-1.22.774-3.438 2.272-.325.223-.62.332-.884.326-.291-.006-.851-.165-1.267-.301-.511-.166-.916-.254-.881-.536.018-.147.221-.297.608-.451 2.388-1.04 3.979-1.725 4.774-2.056 2.27-.942 2.741-1.107 3.048-1.112.068-.001.221.016.321.097.083.067.11.157.118.225.008.067.01.215.006.26z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </footer>
+    </div>
 
     <script>
-        // ESTADO
+
+
+        // CONFIGURACIÓN INICIAL
         let searchTerm = "";
+        let isMaint = false; // CAMBIAR A FALSE PARA DESACTIVAR POR DEFECTO
         
         const products = [
-            {
-                id: 1,
-                customId: "DD-5777",
-                name: "Gpay Bin y metodo",
-                price: 30,
-                category: "Bin y Metodo",
-                description: "Compras altas garantizadas",
-                image: "https://tse4.mm.bing.net/th/id/OIP.tG4M9vkmJkGyNjyJxgZ_iAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3"
-            },
-            {
-                id: 2,
-                customId: "DD-1092",
-                name: "Bin apple enviando",
-                price: 60,
-                category: "Bin y Metodo",
-                description: "Con pruebas y referencias",
-                image: "https://tse1.mm.bing.net/th/id/OIP.-HIrpRMx0kqqSEVJxOFMsgHaEB?rs=1&pid=ImgDetMain&o=7&rm=3"
-            },
-            {
-                id: 3,
-                customId: "DD-3342",
-                name: "Amazon con Historial",
-                price: 40,
-                category: "Bin y Metodo",
-                description: "Amazon Peluche, pagando y enviando cuentas con historial",
-                image: "https://tse3.mm.bing.net/th/id/OIF.e2hqrE3a9tjSpAOArVYEww?rs=1&pid=ImgDetMain&o=7&rm=3"
-            }
+            { id: 1, customId: "DD-5777", name: "Gpay Bin y metodo", price: 30, category: "Bin y Metodo", description: "Compras altas garantizadas", image: "https://tse4.mm.bing.net/th/id/OIP.tG4M9vkmJkGyNjyJxgZ_iAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" },
+            { id: 2, customId: "DD-1092", name: "Bin apple enviando", price: 60, category: "Bin y Metodo", description: "Con pruebas y referencias", image: "https://tse1.mm.bing.net/th/id/OIP.-HIrpRMx0kqqSEVJxOFMsgHaEB?rs=1&pid=ImgDetMain&o=7&rm=3" },
+            { id: 3, customId: "DD-3342", name: "Amazon con Historial", price: 40, category: "Bin y Metodo", description: "Amazon Peluche, pagando y enviando cuentas con historial", image: "https://tse3.mm.bing.net/th/id/OIF.e2hqrE3a9tjSpAOArVYEww?rs=1&pid=ImgDetMain&o=7&rm=3" }
         ];
 
         // MODO OSCURO
-        function toggleDarkMode() {
-            const html = document.documentElement;
-            const sunIcon = document.getElementById('sunIcon');
-            const moonIcon = document.getElementById('moonIcon');
+        function handleMusic(active) {
+    const bgMusic = document.getElementById('bgMusic');
+    
+    if (!bgMusic) {
+        console.warn("No se encontró la etiqueta <audio id='bgMusic'>");
+        return;
+    }
 
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-                sunIcon.classList.add('hidden');
-                moonIcon.classList.remove('hidden');
-            } else {
-                html.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-                sunIcon.classList.remove('hidden');
-                moonIcon.classList.add('hidden');
+    // --- CONFIGURACIÓN DE VOLUMEN ---
+    bgMusic.volume = 0.05; // Cambia este valor (0.0 a 1.0)
+    // --------------------------------
+
+    if (active) {
+        const playPromise = bgMusic.play();
+
+        if (playPromise !== undefined) {
+            playPromise.catch(() => {
+                const unlockEvents = ['click', 'touchstart', 'scroll', 'keydown'];
+                
+                const startOnInteraction = () => {
+                    if (isMaint) {
+                        bgMusic.play().catch(e => console.error("Error al reproducir:", e));
+                    }
+                    unlockEvents.forEach(event => {
+                        document.removeEventListener(event, startOnInteraction);
+                    });
+                };
+
+                unlockEvents.forEach(event => {
+                    document.addEventListener(event, startOnInteraction, { once: true });
+                });
+            });
+        }
+    } else {
+        bgMusic.pause();
+    }
+}
+
+/**
+ * Controla únicamente el estado visual y el video del mantenimiento.
+ */
+function toggleMaintenance(val) {
+    isMaint = val;
+    const overlay = document.getElementById('maintenanceOverlay');
+    const video = document.getElementById('maintVideo');
+
+    if (!overlay) return;
+
+    if (isMaint) {
+        overlay.style.display = 'flex'; 
+        overlay.classList.remove('hidden');
+        document.body.classList.add('no-scroll');
+
+        if (video) {
+            video.muted = true;
+            video.loop = true;
+            if (!video.src.includes("videoplayback.mp4")) {
+                video.src = "videoplayback.mp4";
             }
+            video.play().catch(() => {});
         }
+        
+        handleMusic(true);
 
-        // Cargar preferencia guardada
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-            document.getElementById('sunIcon').classList.remove('hidden');
-            document.getElementById('moonIcon').classList.add('hidden');
-        }
+    } else {
+        overlay.style.display = 'none';
+        overlay.classList.add('hidden');
+        document.body.classList.remove('no-scroll');
+        
+        if (video) video.pause();
+        handleMusic(false);
+    }
+}
+
+window.addEventListener('load', () => {
+    const bgMusic = document.getElementById('bgMusic');
+    
+    if (bgMusic) {
+        const savedTime = localStorage.getItem('musicTime');
+        if (savedTime) bgMusic.currentTime = parseFloat(savedTime);
+
+        setInterval(() => {
+            if (!bgMusic.paused) {
+                localStorage.setItem('musicTime', bgMusic.currentTime);
+            }
+        }, 1000);
+    }
+
+    setTimeout(() => toggleMaintenance(isMaint), 200);
+});
+
 
         // BÚSQUEDA
         function handleSearch(val) {
             searchTerm = val.toLowerCase();
-            document.getElementById('searchInput').value = val;
-            document.getElementById('searchMobile').value = val;
+            const desktopInput = document.getElementById('searchInput');
+            const mobileInput = document.getElementById('searchMobile');
+            if(desktopInput) desktopInput.value = val;
+            if(mobileInput) mobileInput.value = val;
             render();
         }
 
-        // CONTACTO
         function contactTelegram() {
             window.open(`https://t.me/dondinerobhs`, '_blank');
         }
 
-        // RENDER
+        // RENDERIZADO
         function render() {
             const grid = document.getElementById('productsGrid');
             const noResults = document.getElementById('noResults');
+            if(!grid) return;
 
             const filtered = products.filter(p => 
-                p.name.toLowerCase().includes(searchTerm) || 
-                p.category.toLowerCase().includes(searchTerm)
+                p.name.toLowerCase().includes(searchTerm) || p.category.toLowerCase().includes(searchTerm)
             );
 
             grid.innerHTML = "";
-            
             if(filtered.length === 0) {
-                noResults.classList.remove('hidden');
+                if(noResults) noResults.classList.remove('hidden');
             } else {
-                noResults.classList.add('hidden');
+                if(noResults) noResults.classList.add('hidden');
                 filtered.forEach(p => {
                     grid.innerHTML += `
                         <div class="bg-white dark:bg-slate-800/50 rounded-[2rem] shadow-sm hover:shadow-2xl transition-all border border-slate-100 dark:border-slate-700/50 overflow-hidden flex flex-col group hover:-translate-y-1 duration-300 animate__animated animate__fadeIn">
                             <div class="aspect-card overflow-hidden relative bg-slate-100 dark:bg-slate-900">
                                 <img src="${p.image}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100" alt="${p.name}">
-                                <div class="absolute top-4 left-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-3 py-1 rounded-xl text-[8px] font-black uppercase text-emerald-600 dark:text-emerald-400 shadow-sm italic transition-colors">
+                                <div class="absolute top-3 left-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-2 py-0.5 rounded-lg text-[7px] font-black uppercase text-emerald-600 dark:text-emerald-400 shadow-sm italic">
                                     ${p.category}
                                 </div>
                             </div>
-                            <div class="p-6 flex-1 flex flex-col">
-                                <span class="text-[8px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest mb-1 transition-colors">REF: ${p.customId}</span>
-                                <h3 class="font-black text-lg sm:text-xl text-slate-800 dark:text-slate-100 line-clamp-1 mb-1 tracking-tight uppercase italic transition-colors">${p.name}</h3>
-                                <p class="text-[11px] sm:text-xs text-slate-400 dark:text-slate-500 mb-6 flex-1 line-clamp-2 italic font-serif-italic leading-relaxed transition-colors">${p.description}</p>
+                            <div class="p-4 sm:p-6 flex-1 flex flex-col">
+                                <span class="text-[7px] sm:text-[8px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest mb-1">REF: ${p.customId}</span>
+                                <h3 class="font-black text-base sm:text-xl text-slate-800 dark:text-slate-100 line-clamp-1 mb-1 tracking-tight uppercase italic transition-colors">${p.name}</h3>
+                                <p class="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 mb-4 flex-1 line-clamp-2 italic font-serif-italic leading-relaxed transition-colors">${p.description}</p>
                                 <div class="flex items-center justify-between mt-auto">
-                                    <div class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">$${p.price.toFixed(2)}</div>
-                                    <button onclick="contactTelegram()" class="flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white px-4 py-2.5 rounded-xl transition shadow-md active:scale-95 text-[10px] font-bold">
-                                        TELEGRAM
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                                    <div class="text-lg sm:text-2xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">$${p.price.toFixed(2)}</div>
+                                    <button onclick="contactTelegram()" class="flex items-center gap-1.5 bg-sky-500 hover:bg-sky-600 text-white px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl transition shadow-md active:scale-95 text-[9px] font-bold">
+                                        PEDIR
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
                                     </button>
                                 </div>
                             </div>
@@ -273,7 +354,28 @@
             }
         }
 
-        window.onload = render;
+
+
+        // CARGA INICIAL
+        window.onload = () => {
+            // Aplicar tema guardado
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('sunIcon').classList.add('hidden');
+                document.getElementById('moonIcon').classList.remove('hidden');
+            } else {
+                document.documentElement.classList.add('dark');
+                document.getElementById('sunIcon').classList.remove('hidden');
+                document.getElementById('moonIcon').classList.add('hidden');
+            }
+
+            // Aplicar estado de mantenimiento inicial
+            toggleMaintenance(isMaint);
+            
+            // Renderizar productos
+            render();
+        };
     </script>
 </body>
-</html> 
+</html>
