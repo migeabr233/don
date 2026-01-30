@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="es" class="dark">
 <head>
-    <!--version 0.1--> <!--productos act 1-->
-    <!--telegram link-->
+    <!--version 0.9.1--> <!--Restaurado Mantenimiento + Nuevos Precios y Nombres-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Don Dinero - Marketplace Premium</title>
@@ -41,69 +40,48 @@
             aspect-ratio: 16 / 9;
         }
 
-        /* Mantenimiento Overlay */
-        #maintenanceOverlay {
-            backdrop-filter: blur(25px);
-            background: radial-gradient(circle at center, #064e3b 0%, #020617 100%);
-        }
-
-        .no-scroll {
-            overflow: hidden;
-            height: 100vh;
-        }
-
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            width: 100%;
-        }
-        .video-container iframe {
+        .dropdown-content {
+            display: none;
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            right: 0;
+            top: calc(100% + 10px);
+            min-width: 200px;
+            z-index: 100;
+        }
+        
+        .dropdown-content.show {
+            display: block;
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         .dark ::-webkit-scrollbar-track { background: #1e293b; }
         ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
+
+        .hidden-view { display: none; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 leading-tight transition-colors duration-300">
 
     <!-- PANTALLA DE MANTENIMIENTO -->
-    <div id="maintenanceOverlay" class="fixed inset-0 z-[100] flex flex-col items-center justify-center p-4 sm:p-8 text-center hidden">
-        <div class="max-w-4xl w-full space-y-6 sm:space-y-8 animate__animated animate__fadeIn">
-            <div class="flex justify-center">
-                <div class="bg-emerald-600 p-4 sm:p-5 rounded-3xl shadow-[0_0_50px_rgba(16,185,129,0.4)] animate-pulse">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 sm:h-12 sm:w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+    <div id="maintenanceScreen" class="fixed inset-0 z-[100] bg-slate-900 flex items-center justify-center p-6 hidden">
+        <div class="max-w-md w-full text-center space-y-8 animate__animated animate__fadeIn">
+            <div class="relative inline-block">
+                <div class="absolute inset-0 bg-emerald-500 blur-3xl opacity-20 animate-pulse"></div>
+                <div class="bg-slate-800 p-8 rounded-[3rem] border border-slate-700 relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-emerald-500 mx-auto mb-6 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
+                    <h2 class="text-3xl font-black text-white italic uppercase tracking-tighter">Bajo Mantenimiento</h2>
+                    <p class="text-slate-400 mt-4 font-serif-italic">Estamos actualizando nuestro inventario con los mejores productos del mercado.</p>
                 </div>
             </div>
-            
-            <div class="space-y-2 sm:space-y-4 px-2">
-                <h1 class="text-4xl xs:text-5xl md:text-8xl font-black text-white tracking-tighter uppercase italic leading-[0.85]">
-                    Mantenimiento <br> en curso
-                </h1>
-                <p class="text-emerald-100/70 text-base sm:text-2xl font-serif-italic max-w-xl mx-auto italic">
-                    Estamos actualizando nuestro inventario. Volvemos pronto.
-                </p>
-            </div>
-
-            <div class="w-full max-w-2xl mx-auto px-2">
-                <div class="video-container rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-2 sm:border-4 border-emerald-900/50 bg-black">
-                    <video id="maintVideo" loop playsinline autoplay></video>
-                </div>
-            </div>
-
             <div class="pt-4">
-                <span class="text-emerald-500 font-black text-xl sm:text-3xl tracking-[0.2em] uppercase italic opacity-50">Don Dinero</span>
+                <a href="https://t.me/dondinerobhs" target="_blank" class="inline-flex items-center gap-3 bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-4 rounded-2xl font-black uppercase italic tracking-widest transition-all shadow-xl shadow-emerald-900/20 active:scale-95">
+                    Contactar Soporte
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                </a>
             </div>
         </div>
     </div>
@@ -115,9 +93,9 @@
                 <div class="flex justify-between h-16 sm:h-20 items-center gap-4">
                     
                     <!-- Logo -->
-                    <div class="flex items-center gap-2 sm:gap-3 cursor-pointer shrink-0" onclick="location.reload()">
-                        <div class="bg-white dark:bg-slate-900 p-1.5 sm:p-2 rounded-xl sm:rounded-2xl shadow-inner rotate-3 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="text-emerald-600 h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="flex items-center gap-2 sm:gap-3 cursor-pointer shrink-0" onclick="showView('inventory')">
+                        <div class="bg-white dark:bg-slate-900 p-2 rounded-xl sm:rounded-2xl shadow-inner rotate-3 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="text-emerald-600 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
@@ -127,64 +105,106 @@
                         </div>
                     </div>
 
-                    <!-- Buscador Desktop -->
-                    <div class="hidden md:block flex-1 max-w-md relative">
+                    <!-- Buscador -->
+                    <div id="searchBarContainer" class="hidden md:block flex-1 max-w-md relative">
                         <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-200 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                         <input 
                             type="text" 
-                            id="searchInput"
                             oninput="handleSearch(this.value)"
-                            placeholder="BUSCAR" 
-                            class="w-full bg-emerald-700/50 dark:bg-emerald-900/50 border-none rounded-xl py-2.5 pl-11 pr-4 text-sm placeholder:text-emerald-200 focus:ring-2 focus:ring-white/20 outline-none transition-all text-white"
+                            placeholder="BUSCAR EN INVENTARIO" 
+                            class="w-full bg-emerald-700/50 dark:bg-emerald-900/50 border-none rounded-xl py-2.5 pl-11 pr-4 text-sm placeholder:text-emerald-200 focus:ring-2 focus:ring-white/20 outline-none transition-all text-white font-bold"
                         />
                     </div>
 
-                    <!-- Botones Acción -->
+                    <!-- Acciones -->
                     <div class="flex items-center gap-2">
-                        <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-emerald-700/50 hover:bg-emerald-500 transition-all text-white">
+                        <div class="dropdown relative">
+                            <button id="menuBtn" class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-emerald-700/50 hover:bg-emerald-500 transition-all text-white active:scale-95 group">
+                                <span class="text-[10px] font-black uppercase tracking-widest opacity-90 group-hover:opacity-100">Menú</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                                </svg>
+                            </button>
+                            <div id="menuContent" class="dropdown-content bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 p-2 animate__animated animate__fadeInUp animate__faster">
+                                <button onclick="showView('inventory')" class="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 rounded-xl transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+                                    Inicio
+                                </button>
+                                <button onclick="showView('inventory')" class="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 rounded-xl transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                                    Inventario
+                                </button>
+                                <button onclick="showView('references')" class="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 rounded-xl transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    Referencias
+                                </button>
+                                <div class="h-[1px] bg-slate-100 dark:bg-slate-700 my-1 mx-2"></div>
+                                <a href="https://t.me/dondinerobhs" target="_blank" class="flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 rounded-xl transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                                    Soporte (TG)
+                                </a>
+                            </div>
+                        </div>
+
+                        <button id="themeToggle" class="p-2.5 rounded-xl bg-emerald-700/50 hover:bg-emerald-500 transition-all text-white">
                             <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 5a7 7 0 100 14 7 7 0 000-14z" /></svg>
                             <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
                         </button>
-                        <div class="h-8 w-[1px] bg-white/20 mx-1"></div>
-                        <span class="hidden sm:block text-[10px] font-black uppercase tracking-widest opacity-80">Catálogo Público</span>
                     </div>
                 </div>
             </div>
         </nav>
 
-        <main class="max-w-7xl mx-auto px-4 py-8 sm:py-12 sm:px-6 lg:px-8">
+        <main id="inventoryView" class="max-w-7xl mx-auto px-4 py-8 sm:py-12 sm:px-6 lg:px-8">
             <div class="mb-8 sm:mb-12">
-                <h1 class="text-4xl sm:text-7xl font-black text-slate-900 dark:text-white tracking-tighter italic uppercase leading-none transition-colors">
+                <h1 class="text-4xl sm:text-7xl font-black text-slate-900 dark:text-white tracking-tighter italic uppercase leading-none">
                     Inventario
                 </h1>
-                <p class="text-slate-500 dark:text-slate-400 text-sm sm:text-base mt-3 font-serif-italic transition-colors">
-                    Métodos y servicios actualizados
+                <p class="text-slate-500 dark:text-slate-400 text-sm sm:text-base mt-3 font-serif-italic">
+                    Productos seleccionados de alta gama
                 </p>
             </div>
             
-            <div id="productsGrid" class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8"></div>
+            <div id="inventoryContainer" class="space-y-16"></div>
 
-            <div id="noResults" class="hidden text-center py-24 sm:py-32 bg-white dark:bg-slate-800/50 rounded-[2.5rem] border border-slate-100 dark:border-slate-700/50 flex flex-col items-center px-6 transition-colors">
-                <h2 class="text-xl font-black text-slate-300 dark:text-slate-600 uppercase italic tracking-widest">Sin coincidencias</h2>
+            <div id="noResults" class="hidden text-center py-24 bg-white dark:bg-slate-800/50 rounded-[2.5rem] border border-slate-100 dark:border-slate-700/50">
+                <h2 class="text-xl font-black text-slate-300 dark:text-slate-600 uppercase italic tracking-widest">Sin resultados</h2>
             </div>
-            <audio id="bgMusic" src="musica.mp3" loop></audio>
         </main>
 
-        <footer class="max-w-7xl mx-auto px-4 py-12 border-t border-slate-200 dark:border-slate-800 mt-auto mb-8">
+        <main id="referencesView" class="max-w-7xl mx-auto px-4 py-8 sm:py-12 sm:px-6 lg:px-8 hidden-view">
+            <div class="mb-8 sm:mb-12">
+                <h1 class="text-4xl sm:text-7xl font-black text-slate-900 dark:text-white tracking-tighter italic uppercase leading-none">
+                    Referencias
+                </h1>
+                <p class="text-slate-500 dark:text-slate-400 text-sm sm:text-base mt-3 font-serif-italic">
+                    Clientes satisfechos y pruebas de éxito
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white dark:bg-slate-800/50 rounded-[2.5rem] border border-slate-100 dark:border-slate-700/50 overflow-hidden group shadow-lg">
+                    <div class="aspect-[3/4] overflow-hidden bg-slate-100 dark:bg-slate-900 relative">
+                        <div class="absolute inset-0 flex items-center justify-center text-slate-300 dark:text-slate-700 font-black italic">PRUEBA DE VENTA #1</div>
+                        <img src="https://images.unsplash.com/photo-1512428559087-560fa5ceab42?q=80&w=500&auto=format&fit=crop" class="w-full h-full object-cover opacity-60" alt="Referencia">
+                    </div>
+                    <div class="p-6">
+                        <div class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">Éxito Confirmado</div>
+                        <h3 class="text-slate-800 dark:text-white font-bold italic">Venta de Bin Apple</h3>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="max-w-7xl mx-auto px-4 py-12 border-t border-slate-200 dark:border-slate-800 mt-auto mb-8 text-center sm:text-left">
             <div class="flex flex-col sm:flex-row justify-between items-center gap-6">
                 <div class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-600 italic">
-                    Don Dinero © 2024 • Calidad Garantizada
+                    Don Dinero © 2024 • Excellence in every transaction
                 </div>
-                
-                <!-- El interruptor de mantenimiento ahora está oculto visualmente pero sigue en el DOM -->
-                <div class="flex items-center gap-6">
-                    <div class="hidden flex items-center gap-2 opacity-30 hover:opacity-100 transition-opacity">
-                        <span class="text-[8px] font-bold uppercase text-slate-400">Maint Mode</span>
-                        <input type="checkbox" id="maintCheckbox" onchange="toggleMaintenance(this.checked)" class="w-3 h-3 cursor-pointer">
-                    </div>
-                    <button onclick="contactTelegram()" class="text-slate-400 hover:text-emerald-500 transition-colors">
+                <div class="flex gap-4">
+                    <button onclick="window.open('https://t.me/dondinerobhs', '_blank')" class="text-slate-400 hover:text-emerald-500 transition-colors">
                         <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18.717-.962 4.084-1.362 5.441-.168.575-.532.747-.733.765-.453.041-.796-.301-1.235-.588-.687-.45-1.074-.731-1.741-1.168-.771-.506-.271-.784.168-1.238.115-.119 2.112-1.937 2.151-2.102.005-.021.009-.099-.039-.141-.047-.043-.117-.028-.168-.016-.072.016-1.22.774-3.438 2.272-.325.223-.62.332-.884.326-.291-.006-.851-.165-1.267-.301-.511-.166-.916-.254-.881-.536.018-.147.221-.297.608-.451 2.388-1.04 3.979-1.725 4.774-2.056 2.27-.942 2.741-1.107 3.048-1.112.068-.001.221.016.321.097.083.067.11.157.118.225.008.067.01.215.006.26z"/></svg>
                     </button>
                 </div>
@@ -193,204 +213,162 @@
     </div>
 
     <script>
+        // CONFIGURACIÓN DE MANTENIMIENTO (Cámbialo a false para abrir la tienda)
+        const isMaintenance = false; 
 
-
-        // CONFIGURACIÓN INICIAL
         let searchTerm = "";
-        let isMaint = true; // CAMBIAR A FALSE PARA DESACTIVAR POR DEFECTO
-        
+        const categoryOrder = ["Bin y Metodo", "Herramientas", "Bases y Lotes de cc"];
+
         const products = [
-            { id: 1, customId: "DD-5777", name: "Gpay Bin y metodo", price: 30, category: "Bin y Metodo", description: "Compras altas garantizadas", image: "https://tse4.mm.bing.net/th/id/OIP.tG4M9vkmJkGyNjyJxgZ_iAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" },
-            { id: 2, customId: "DD-1092", name: "Bin apple enviando", price: 60, category: "Bin y Metodo", description: "Con pruebas y referencias", image: "https://tse1.mm.bing.net/th/id/OIP.-HIrpRMx0kqqSEVJxOFMsgHaEB?rs=1&pid=ImgDetMain&o=7&rm=3" },
-            { id: 3, customId: "DD-3342", name: "Amazon con Historial", price: 40, category: "Bin y Metodo", description: "Amazon Peluche, pagando y enviando cuentas con historial", image: "https://tse3.mm.bing.net/th/id/OIF.e2hqrE3a9tjSpAOArVYEww?rs=1&pid=ImgDetMain&o=7&rm=3" }
+            { id: 1, customId: "DD-5777", name: "Gpay Bin y metodo", price: 30, category: "Bin y Metodo", description: "Compras altas garantizadas con soporte 24/7.", image: "https://tse4.mm.bing.net/th/id/OIP.tG4M9vkmJkGyNjyJxgZ_iAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" },
+            { id: 2, customId: "DD-1092", name: "Bin apple enviando", price: 60, category: "Bin y Metodo", description: "Con pruebas y referencias de envíos exitosos.", image: "https://tse1.mm.bing.net/th/id/OIP.-HIrpRMx0kqqSEVJxOFMsgHaEB?rs=1&pid=ImgDetMain&o=7&rm=3" },
+            { id: 3, customId: "DD-3342", name: "Amazon con Historial", price: 40, category: "Bin y Metodo", description: "Cuentas listas para despacho inmediato.", image: "https://tse3.mm.bing.net/th/id/OIF.e2hqrE3a9tjSpAOArVYEww?rs=1&pid=ImgDetMain&o=7&rm=3" },
+            
+            // HERRAMIENTAS ACTUALIZADAS
+            { id: 4, customId: "DD-9901", name: "HMC MAIL ACCESS", price: 100, category: "Herramientas", description: "Acceso exclusivo y filtrado para máxima eficiencia.", image: "https://i.imgur.com/Gh6jHfE.png" },
+            { id: 5, customId: "DD-9902", name: "Checker Amazon gratis", price: 0.00, category: "Herramientas", description: "Herramienta gratuita para verificar validez de cuentas.", image: "amazonfoto.jpg" },
+
+            { id: 9, customId: "DD-2005", name: "generador de cedula dominicana", price: 80, category: "Herramientas", description: "Generador de cedulas para billing", image: "https://tse4.mm.bing.net/th/id/OIP.V0EGrgOx7isUMRenjYXgBAHaEp?rs=1&pid=ImgDetMain&o=7&rm=3" },
+            
+            // LOTES ACTUALIZADOS
+            { id: 6, customId: "DD-2001", name: "Lote USA 10k CC", price: 75, category: "Bases y Lotes de cc", description: "Base de alta calidad", image: "https://frugalflyer.ca/wp-content/uploads/2021/11/amex-usa-credit-card-lineup-1.jpg" },
+            { id: 7, customId: "DD-2002", name: "Base malasya 50k cc", price: 120, category: "Bases y Lotes de cc", description: "Volumen masivo enfocado en malasya", image: "https://tse2.mm.bing.net/th/id/OIP.roL_RsaTOZ1EQKqAI7PvggHaHa?w=500&h=500&rs=1&pid=ImgDetMain&o=7&rm=3" },
+            { id: 8, customId: "DD-2003", name: "base 1k cc live charged", price: 80, category: "Bases y Lotes de cc", description: "Base 1k cc malasya live charged", image: "https://i0.wp.com/ringgitohringgit.com/wp-content/uploads/2021/10/best-credit-card-in-malaysia-maybank-ikhwan-credit-card.jpg?w=933&ssl=1" },
         ];
 
-        // MODO OSCURO
-        function handleMusic(active) {
-    const bgMusic = document.getElementById('bgMusic');
-    
-    if (!bgMusic) {
-        console.warn("No se encontró la etiqueta <audio id='bgMusic'>");
-        return;
-    }
+        const menuBtn = document.getElementById('menuBtn');
+        const menuContent = document.getElementById('menuContent');
 
-    // Configuración inicial de volumen
-    bgMusic.volume = 0.05;
+        menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menuContent.classList.toggle('show');
+        });
 
-    if (active) {
-        // En móviles es VITAL asegurar que playsinline esté presente
-        bgMusic.setAttribute('playsinline', 'true');
-
-        const playPromise = bgMusic.play();
-
-        if (playPromise !== undefined) {
-            playPromise.catch(() => {
-                // Lista extendida de eventos que Android reconoce como interacción válida
-                const androidUnlockEvents = [
-                    'click', 
-                    'touchstart', 
-                    'touchend', 
-                    'scroll', 
-                    'touchmove',
-                    'keydown'
-                ];
-                
-                const startAudioOnMobile = () => {
-                    if (isMaint) {
-                        bgMusic.play().then(() => {
-                            console.log("Audio desbloqueado en Android");
-                        }).catch(e => console.error("Error persistente:", e));
-                    }
-                    
-                    // Limpieza de listeners
-                    androidUnlockEvents.forEach(event => {
-                        document.removeEventListener(event, startAudioOnMobile);
-                    });
-                };
-
-                // Añadimos los escuchadores de eventos
-                androidUnlockEvents.forEach(event => {
-                    document.addEventListener(event, startAudioOnMobile, { once: true, passive: true });
-                });
-            });
-        }
-    } else {
-        bgMusic.pause();
-    }
-}
-
-/**
- * Controla visuales y video
- */
-function toggleMaintenance(val) {
-    isMaint = val;
-    const overlay = document.getElementById('maintenanceOverlay');
-    const video = document.getElementById('maintVideo');
-
-    if (!overlay) return;
-
-    if (isMaint) {
-        overlay.style.display = 'flex'; 
-        overlay.classList.remove('hidden');
-        document.body.classList.add('no-scroll');
-
-        if (video) {
-            video.muted = true;
-            video.loop = true;
-            // Playsinline es obligatorio para que el video no se abra en el reproductor nativo de Android/iOS
-            video.setAttribute('playsinline', 'true');
-            if (!video.src.includes("videoplayback.mp4")) {
-                video.src = "videoplayback.mp4";
+        document.addEventListener('click', (e) => {
+            if (!menuBtn.contains(e.target)) {
+                menuContent.classList.remove('show');
             }
-            video.play().catch(() => {});
-        }
-        
-        handleMusic(true);
+        });
 
-    } else {
-        overlay.style.display = 'none';
-        overlay.classList.add('hidden');
-        document.body.classList.remove('no-scroll');
-        
-        if (video) video.pause();
-        handleMusic(false);
-    }
-}
-
-window.addEventListener('load', () => {
-    const bgMusic = document.getElementById('bgMusic');
-    
-    if (bgMusic) {
-        const savedTime = localStorage.getItem('musicTime');
-        if (savedTime) bgMusic.currentTime = parseFloat(savedTime);
-
-        setInterval(() => {
-            if (!bgMusic.paused) {
-                localStorage.setItem('musicTime', bgMusic.currentTime);
-            }
-        }, 1000);
-    }
-
-    setTimeout(() => toggleMaintenance(isMaint), 200);
-});
-
-        // BÚSQUEDA
         function handleSearch(val) {
             searchTerm = val.toLowerCase();
-            const desktopInput = document.getElementById('searchInput');
-            const mobileInput = document.getElementById('searchMobile');
-            if(desktopInput) desktopInput.value = val;
-            if(mobileInput) mobileInput.value = val;
             render();
         }
 
-        function contactTelegram() {
-            window.open(`https://t.me/dondinerobhs`, '_blank');
+        function showView(viewName) {
+            const inventoryView = document.getElementById('inventoryView');
+            const referencesView = document.getElementById('referencesView');
+            const searchBar = document.getElementById('searchBarContainer');
+            
+            menuContent.classList.remove('show');
+
+            if (viewName === 'inventory') {
+                inventoryView.classList.remove('hidden-view');
+                referencesView.classList.add('hidden-view');
+                searchBar.classList.remove('md:hidden');
+                searchBar.classList.add('md:block');
+            } else {
+                inventoryView.classList.add('hidden-view');
+                referencesView.classList.remove('hidden-view');
+                searchBar.classList.add('md:hidden');
+                searchBar.classList.remove('md:block');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // RENDERIZADO
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcons(isDark);
+        }
+
+        function updateThemeIcons(isDark) {
+            const sun = document.getElementById('sunIcon');
+            const moon = document.getElementById('moonIcon');
+            if (isDark) {
+                sun.classList.remove('hidden');
+                moon.classList.add('hidden');
+            } else {
+                sun.classList.add('hidden');
+                moon.classList.remove('hidden');
+            }
+        }
+
         function render() {
-            const grid = document.getElementById('productsGrid');
+            const container = document.getElementById('inventoryContainer');
             const noResults = document.getElementById('noResults');
-            if(!grid) return;
+            if(!container) return;
 
             const filtered = products.filter(p => 
-                p.name.toLowerCase().includes(searchTerm) || p.category.toLowerCase().includes(searchTerm)
+                p.name.toLowerCase().includes(searchTerm) || 
+                p.category.toLowerCase().includes(searchTerm) ||
+                p.description.toLowerCase().includes(searchTerm)
             );
 
-            grid.innerHTML = "";
+            container.innerHTML = "";
+
             if(filtered.length === 0) {
-                if(noResults) noResults.classList.remove('hidden');
-            } else {
-                if(noResults) noResults.classList.add('hidden');
-                filtered.forEach(p => {
-                    grid.innerHTML += `
-                        <div class="bg-white dark:bg-slate-800/50 rounded-[2rem] shadow-sm hover:shadow-2xl transition-all border border-slate-100 dark:border-slate-700/50 overflow-hidden flex flex-col group hover:-translate-y-1 duration-300 animate__animated animate__fadeIn">
-                            <div class="aspect-card overflow-hidden relative bg-slate-100 dark:bg-slate-900">
-                                <img src="${p.image}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100" alt="${p.name}">
-                                <div class="absolute top-3 left-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-2 py-0.5 rounded-lg text-[7px] font-black uppercase text-emerald-600 dark:text-emerald-400 shadow-sm italic">
-                                    ${p.category}
+                noResults.classList.remove('hidden');
+                return;
+            }
+
+            noResults.classList.add('hidden');
+
+            categoryOrder.forEach(catName => {
+                const catProducts = filtered.filter(p => p.category === catName);
+                
+                if(catProducts.length > 0) {
+                    const section = document.createElement('div');
+                    section.className = "animate__animated animate__fadeIn";
+                    section.innerHTML = `
+                        <div class="flex items-center gap-4 mb-8">
+                            <h2 class="text-2xl font-black uppercase italic tracking-widest text-emerald-600 dark:text-emerald-400 shrink-0">
+                                ${catName}
+                            </h2>
+                            <div class="h-[2px] w-full bg-slate-200 dark:bg-slate-800/50"></div>
+                        </div>
+                        <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+                            ${catProducts.map(p => `
+                                <div class="bg-white dark:bg-slate-800/50 rounded-[2.5rem] shadow-sm hover:shadow-2xl transition-all border border-slate-100 dark:border-slate-700/50 overflow-hidden flex flex-col group hover:-translate-y-1 duration-300">
+                                    <div class="aspect-card overflow-hidden relative bg-slate-100 dark:bg-slate-900">
+                                        <img src="${p.image}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100" alt="${p.name}">
+                                        ${p.price === 0 ? '<div class="absolute top-4 right-4 bg-emerald-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-tighter">Gratis</div>' : ''}
+                                    </div>
+                                    <div class="p-6 flex-1 flex flex-col">
+                                        <span class="text-[8px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest mb-1 italic">REF: ${p.customId}</span>
+                                        <h3 class="font-black text-lg sm:text-xl text-slate-800 dark:text-slate-100 line-clamp-1 mb-1 tracking-tight uppercase italic transition-colors">${p.name}</h3>
+                                        <p class="text-[11px] sm:text-xs text-slate-400 dark:text-slate-500 mb-6 flex-1 line-clamp-2 italic font-serif-italic leading-relaxed transition-colors">${p.description}</p>
+                                        <div class="flex items-center justify-between mt-auto">
+                                            <div class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">
+                                                ${p.price === 0 ? 'FREE' : '$' + p.price.toFixed(2)}
+                                            </div>
+                                            <button onclick="window.open('https://t.me/dondinerobhs', '_blank')" class="flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white px-4 py-2.5 rounded-xl transition shadow-md active:scale-95 text-[10px] font-bold uppercase">
+                                                ${p.price === 0 ? 'Obtener' : 'Pedir'}
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="p-4 sm:p-6 flex-1 flex flex-col">
-                                <span class="text-[7px] sm:text-[8px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest mb-1">REF: ${p.customId}</span>
-                                <h3 class="font-black text-base sm:text-xl text-slate-800 dark:text-slate-100 line-clamp-1 mb-1 tracking-tight uppercase italic transition-colors">${p.name}</h3>
-                                <p class="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 mb-4 flex-1 line-clamp-2 italic font-serif-italic leading-relaxed transition-colors">${p.description}</p>
-                                <div class="flex items-center justify-between mt-auto">
-                                    <div class="text-lg sm:text-2xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">$${p.price.toFixed(2)}</div>
-                                    <button onclick="contactTelegram()" class="flex items-center gap-1.5 bg-sky-500 hover:bg-sky-600 text-white px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl transition shadow-md active:scale-95 text-[9px] font-bold">
-                                        PEDIR
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-                                    </button>
-                                </div>
-                            </div>
+                            `).join('')}
                         </div>
                     `;
-                });
-            }
+                    container.appendChild(section);
+                }
+            });
         }
 
-
-
-        // CARGA INICIAL
         window.onload = () => {
-            // Aplicar tema guardado
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'light') {
-                document.documentElement.classList.remove('dark');
-                document.getElementById('sunIcon').classList.add('hidden');
-                document.getElementById('moonIcon').classList.remove('hidden');
+            // Manejo de Mantenimiento
+            if (isMaintenance) {
+                document.getElementById('maintenanceScreen').classList.remove('hidden');
+                document.getElementById('app').classList.add('hidden');
             } else {
-                document.documentElement.classList.add('dark');
-                document.getElementById('sunIcon').classList.remove('hidden');
-                document.getElementById('moonIcon').classList.add('hidden');
+                const savedTheme = localStorage.getItem('theme') || 'dark';
+                document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+                updateThemeIcons(savedTheme === 'dark');
+                document.getElementById('themeToggle').onclick = toggleDarkMode;
+                render();
             }
-
-            // Aplicar estado de mantenimiento inicial
-            toggleMaintenance(isMaint);
-            
-            // Renderizar productos
-            render();
         };
     </script>
 </body>
