@@ -277,7 +277,7 @@
         const isMaintenance = false; 
 
         let searchTerm = "";
-        const categoryOrder = ["Bin y Metodo", "Herramientas", "Bases y Lotes de cc"];
+        const categoryOrder = ["Bin y Metodo", "Herramientas", "Bases y Lotes de cc", "Servicios"];
 
         /**
          * SISTEMA DE PRODUCTOS
@@ -296,6 +296,9 @@
             { id: 11, customId: "DD-3345", name: "Ebay Historial", price: 50, category: "Bin y Metodo", tag: "Actualizado", description: "Menos de 500$", image: "https://tse1.mm.bing.net/th/id/OIP.UU8PI_VXbr5ii3fwWiPqHgHaEK?rs=1&pid=ImgDetMain&o=7&rm=3" },
             { id: 12, customId: "DD-3346", name: "Airbnb Cashout", price: 40, category: "Bin y Metodo", tag: "Nuevo", description: "Ideal para cuentas con historial de compras.", image: "https://th.bing.com/th/id/R.7a5a6f2b8f082d95b8e38bc757457437?rik=cC4Ur2aY5uEmvg&pid=ImgRaw&r=0" },
             { id: 12, customId: "DD-3347", name: "Facebook envios", price: 40, category: "Bin y Metodo", tag: "Nuevo", description: "Facebooks de 1 años o mas viejos", image: "https://tse3.mm.bing.net/th/id/OIP.HmrU8y3zEC51adaiCZASgQHaE8?rs=1&pid=ImgDetMain&o=7&rm=3" },
+            //CATEGORIA: Servicios
+            { id: 7, customId: "DD-20-07", name: "Servicios", price: 120, category: "Servicios", tag: "Nuevo", description: "Servicios", image: "https://placehold.org/300x200/cccccc/000000?text=Hola+Mundo" },
+
             // CATEGORÍA: Herramientas
             { id: 4, customId: "DD-9901", name: "HMC 1.9, 2.0 y 2.3", price: 50, category: "Herramientas", tag: "Nuevo", description: "Acceso exclusivo y filtrado para máxima eficiencia.", image: "https://i.imgur.com/Gh6jHfE.png" },
             { id: 5, customId: "DD-9902", name: "Checker Amazon gratis", price: 0, category: "Herramientas", description: "Herramienta gratuita para sacar live rápidamente.", image: "amazonfoto.jpg" },
@@ -311,6 +314,7 @@
             { id: 6, customId: "DD-2001", name: "Lote USA 10k CC", price: 75, category: "Bases y Lotes de cc", tag: "Más vendido", description: "Base de alta calidad, filtrada recientemente.", image: "https://frugalflyer.ca/wp-content/uploads/2021/11/amex-usa-credit-card-lineup-1.jpg" },
             { id: 8, customId: "DD-2003", name: "base 5k malasya", price: 35, category: "Bases y Lotes de cc", tag: "Actualizado", description: "Base 5k cc", image: "https://i0.wp.com/ringgitohringgit.com/wp-content/uploads/2021/10/best-credit-card-in-malaysia-maybank-ikhwan-credit-card.jpg?w=933&ssl=1" },
             { id: 7, customId: "DD-2002", name: "Base malasya 50k cc", price: 120, category: "Bases y Lotes de cc", tag: "Nuevo", description: "Volumen masivo enfocado en malasya", image: "https://tse2.mm.bing.net/th/id/OIP.roL_RsaTOZ1EQKqAI7PvggHaHa?w=500&h=500&rs=1&pid=ImgDetMain&o=7&rm=3" },
+
         ];
 
         function getTagStyles(tagName) {
